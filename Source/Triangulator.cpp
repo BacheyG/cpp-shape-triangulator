@@ -1,14 +1,18 @@
-#include "earcut.hpp"
+// Created by Gábor Bácsi
+// 4/5/2024
 
+#include "Triangulator.hpp"
+
+#include "../Vector/Vector.hpp"
 #include <algorithm>
 #include <unordered_map>
 #include <vector>
 
-float squareDistance(const Vertex& p1, const Vertex& p2) {
+float squareDistance(const Vector2D<float>& p1, const Vector2D<float>& p2) {
 	return (p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y);
 }
 
-float pointToHorizontalSegmentIntersectDistance(const Vertex& origin, const Vertex& segmentA, const Vertex& segmentB) {
+float pointToHorizontalSegmentIntersectDistance(const Vector2D<float>& origin, const Vector2D<float>& segmentA, const Vector2D<float>& segmentB) {
 	float result = -1;
 	float denominator = segmentA.Y - segmentB.Y;
 	if (denominator != 0) {
@@ -18,7 +22,7 @@ float pointToHorizontalSegmentIntersectDistance(const Vertex& origin, const Vert
 	return result;
 }
 
-bool getShapeOrientation(const std::vector<Vertex>& shape) {
+bool getShapeOrientation(const std::vector<Vector2D<float>>& shape) {
 	float areaSum = 0.0f;
 	for (int i = 0; i < shape.size(); ++i) {
 		int iNext = (i + 1) % static_cast<int>(shape.size());
@@ -27,7 +31,7 @@ bool getShapeOrientation(const std::vector<Vertex>& shape) {
 	return (areaSum >= 0);
 }
 
-bool getShapeLinkedOrientation(const std::vector<Vertex>& shape, const std::vector<int>& nextIndices) {
+bool getShapeLinkedOrientation(const std::vector<Vector2D<float>>& shape, const std::vector<int>& nextIndices) {
 	float areaSum = 0.0f;
 	int i = -1;
 	while (i != 0) {
@@ -48,8 +52,8 @@ void constructShapeLinkedList(std::vector<int>& nextIndices, int startIndex, int
 	}
 }
 
-int getRightMostVertexIndex(const std::vector<Vertex>& shape, int startIndex, int endIndex) {
-	Vertex rightMostVertex = shape[startIndex];
+int getRightMostVertexIndex(const std::vector<Vector2D<float>>& shape, int startIndex, int endIndex) {
+	Vector2D<float> rightMostVertex = shape[startIndex];
 	int rightMostIndex = startIndex;
 
 	for (int i = startIndex; i < endIndex; ++i) {
@@ -61,7 +65,7 @@ int getRightMostVertexIndex(const std::vector<Vertex>& shape, int startIndex, in
 	return rightMostIndex;
 }
 
-bool pointInTriangle(const Vertex& p0, const Vertex& p1, const Vertex& p2, const Vertex& p) {
+bool pointInTriangle(const Vector2D<float>& p0, const Vector2D<float>& p1, const Vector2D<float>& p2, const Vector2D<float>& p) {
 	if (squareDistance(p0, p) == 0.0 || squareDistance(p1, p) == 0.0 || squareDistance(p2, p) == 0.0) {
 		return false;
 	}
@@ -79,7 +83,7 @@ bool pointInTriangle(const Vertex& p0, const Vertex& p1, const Vertex& p2, const
 bool holeSortFunction(std::pair<float, int> a, std::pair<float, int> b) { return (a.first > b.first); }
 
 
-void combineSortedHoles(std::vector<Vertex>& result, const std::vector<std::vector<Vertex>> holes, std::vector<int>& holeIndices) {
+void combineSortedHoles(std::vector<Vector2D<float>>& result, const std::vector<std::vector<Vector2D<float>>> holes, std::vector<int>& holeIndices) {
 
 	std::vector<std::pair<float, int>> rightMostPositions;
 	int count = 0;
@@ -90,14 +94,14 @@ void combineSortedHoles(std::vector<Vertex>& result, const std::vector<std::vect
 	}
 	sort(rightMostPositions.begin(), rightMostPositions.end(), holeSortFunction);
 	for (const auto& rightMostPosition : rightMostPositions) {
-		for (const Vertex& vertex : holes[rightMostPosition.second]) {
+		for (const Vector2D<float>& vertex : holes[rightMostPosition.second]) {
 			result.push_back(vertex);
 		}
 		holeIndices.push_back(static_cast<int>(result.size()));
 	}
 }
 
-void mergeShapeWithHoles(std::vector<Vertex>& vertices, std::vector<int>& nextIndices, const std::vector<std::vector<Vertex>>& holes, std::unordered_map<int, int>& clonedIndices, int& endOfOuterShape) {
+void mergeShapeWithHoles(std::vector<Vector2D<float>>& vertices, std::vector<int>& nextIndices, const std::vector<std::vector<Vector2D<float>>>& holes, std::unordered_map<int, int>& clonedIndices, int& endOfOuterShape) {
 	endOfOuterShape = static_cast<int>(vertices.size());
 	int outerOffset = endOfOuterShape;
 	std::vector<int> holeIndices;
@@ -127,7 +131,7 @@ void mergeShapeWithHoles(std::vector<Vertex>& vertices, std::vector<int>& nextIn
 				if (currt > 0 && currt < t) {
 					t = currt;
 					// If we intersect with a vertex, we consider this the vertex we were looking for
-					if (squareDistance(vertices[iNext], Vertex(vertices[innerIndex].X + t, vertices[innerIndex].Y)) < std::numeric_limits<float>::epsilon()) {
+					if (squareDistance(vertices[iNext], Vector2D<float>(vertices[innerIndex].X + t, vertices[innerIndex].Y)) < std::numeric_limits<float>::epsilon()) {
 						outerIndex = iNext;
 						// We look for the adjacent vertex on the intersected segment that has larger X
 					}
@@ -141,7 +145,7 @@ void mergeShapeWithHoles(std::vector<Vertex>& vertices, std::vector<int>& nextIn
 		// Check if found outer vertex is obscuredand get the vertex that is visible.
 		float dOuterPoint = abs(vertices[innerIndex].Y - vertices[outerIndex].Y);
 		for (int i = 0; i < endOfOuterShape; ++i) {
-			if (pointInTriangle(Vertex(vertices[innerIndex].X + t, vertices[innerIndex].Y), vertices[innerIndex], vertices[outerIndex], vertices[i])) {
+			if (pointInTriangle(Vector2D<float>(vertices[innerIndex].X + t, vertices[innerIndex].Y), vertices[innerIndex], vertices[outerIndex], vertices[i])) {
 				float newDouterPoint = abs(vertices[innerIndex].Y - vertices[i].Y);
 				if (newDouterPoint < dOuterPoint) {
 					dOuterPoint = newDouterPoint;
@@ -174,7 +178,7 @@ int getOptimizedIndex(const std::unordered_map<int, int>& originalVerticesMap, i
 	return record != originalVerticesMap.end() ? record->second : index;
 }
 
-bool anyPointInTriangle(const std::vector<Vertex>& shape, int i1, int i2, int i3, const std::vector<int>& nextIndices) {
+bool anyPointInTriangle(const std::vector<Vector2D<float>>& shape, int i1, int i2, int i3, const std::vector<int>& nextIndices) {
 	int current = nextIndices[i3];
 	while (current != i1) {
 		if (pointInTriangle(shape[i1], shape[i2], shape[i3], shape[current])) {
@@ -185,7 +189,7 @@ bool anyPointInTriangle(const std::vector<Vertex>& shape, int i1, int i2, int i3
 	return false;
 }
 
-void earClipWithoutHole(std::vector<Vertex>& vertices, std::vector<int>& triangles, std::vector<int>& nextIndices, const std::unordered_map<int, int>& originalVerticesMap) {
+void earClipWithoutHole(std::vector<Vector2D<float>>& vertices, std::vector<int>& triangles, std::vector<int>& nextIndices, const std::unordered_map<int, int>& originalVerticesMap) {
 	bool globalOrientation = getShapeLinkedOrientation(vertices, nextIndices);
 	if (vertices.size() >= 3) {
 		int i1 = 0;
@@ -210,7 +214,7 @@ void earClipWithoutHole(std::vector<Vertex>& vertices, std::vector<int>& triangl
 	}
 }
 
-void earClipWithHole(std::vector<Vertex>& vertices, std::vector<int>& indices, const std::vector<std::vector<Vertex>>& holes) {
+void earClipWithHole(std::vector<Vector2D<float>>& vertices, std::vector<int>& indices, const std::vector<std::vector<Vector2D<float>>>& holes) {
 	if (vertices.size() > 0) {
 		std::vector<int> nextIndices;
 		std::unordered_map<int, int> originalVerticesMap;

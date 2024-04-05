@@ -3,8 +3,7 @@ project(cpp-shape-triangulator)
 set(CMAKE_SUPPRESS_REGENERATION true)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "Source/*.h" "Source/*.cpp" "Source/*.hpp")
-
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "PlotSvg/*.hpp" "PlotSvg/*.cpp" "Vector/*.hpp" "Vector/*.cpp"  "Source/*.cpp" "Source/*.hpp")
 
 macro(GroupSources curdir)
     file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/${curdir} ${PROJECT_SOURCE_DIR}/${curdir}/*)
