@@ -1,30 +1,12 @@
 // Created by Gábor Bácsi
 // 4/5/2024
 
-#include "../Vector/Vector.hpp"
 #include "Triangulator.hpp"
+#include "../Vector/Vector.hpp"
+#include "../PlotSvg/PlotSvg.hpp"
 
 #include <iostream>
 #include <vector>
-
-void printGeometry(const std::vector<Vector2D<float>> vertices, const std::vector<int> indices) {
-	std::cout << "Vertices: ";
-	for (const auto& vertex : vertices) {
-		std::cout << "{" << vertex.X << ", " << vertex.Y << "} ";
-	}
-	std::cout << std::endl;
-	std::cout << "Indices: [";
-	int counter = 0;
-	for (const auto& index : indices) {
-		if (counter++ > 0) {
-			std::cout << ", ";
-		}
-		std::cout << index;
-	}
-	std::cout << "]";
-
-	std::cout << std::endl;
-}
 
 int main()
 {
@@ -34,6 +16,6 @@ int main()
 	std::vector<int> indices;
 
 	earClipWithHole(vertices, indices, holes);
-	printGeometry(vertices, indices);
+	PlotSvg::plotPoligonToSvg("polygon1.svg", vertices, indices);
 	return 0;
 }
