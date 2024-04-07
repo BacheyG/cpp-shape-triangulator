@@ -17,6 +17,13 @@ int main()
 	Triangulator::earClipShape(verticesQuad, indices);
 	PlotSvg::plotPoligonToSvg("polygonQuad.svg", verticesQuad, indices);
 
+	// Case study: A bit more complex shape: adding a cut to make it concave.
+	std::vector<Vector2D<float>> verticesConcave{ {0,0}, {0,1}, {1, 1}, {0.75, 0.5}, {1, 0} };
+	indices.clear();
+
+	Triangulator::earClipShape(verticesConcave, indices);
+	PlotSvg::plotPoligonToSvg("polygonConcave.svg", verticesConcave, indices);
+
 	// Case study: A concave polygon with 2 holes, demonstrating how hole processing order is important: always start with the hole that has the rightmost X coordinate.
 	std::vector<Vector2D<float>> vertices1{ {1,1}, {1.7f,0.3f}, {1.9f,0}, {1.1f,0.2f}, {0,0}, {0,1}, {1,1} };
 	std::vector<std::vector<Vector2D<float>>> holes1{ { {0.55f,0.55f}, {0.27f,0.55f}, {0.2f,0.2f}, {0.85f,0.45f}, {0.55f,0.55f} },
