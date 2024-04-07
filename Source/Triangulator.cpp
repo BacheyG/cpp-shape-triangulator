@@ -49,12 +49,12 @@ void Triangulator::constructShapeLinkedList(std::vector<int>& nextIndices, int s
 }
 
 int Triangulator::getRightMostVertexIndex(const std::vector<Vector2D<float>>& shape, int startIndex, int endIndex) {
-	Vector2D<float> rightMostVertex = shape[startIndex];
+	float rightMostVertexX = shape[startIndex].X;
 	int rightMostIndex = startIndex;
 
 	for (int i = startIndex; i < endIndex; ++i) {
-		if (shape[i].X >= rightMostVertex.X) {
-			rightMostVertex = shape[i];
+		if (shape[i].X >= rightMostVertexX) {
+			rightMostVertexX = shape[i].X;
 			rightMostIndex = i;
 		}
 	}
@@ -188,6 +188,12 @@ bool Triangulator::anyPointInTriangle(const std::vector<Vector2D<float>>& shape,
 	return false;
 }
 
+static inline void unchainCurrentMiddleVertexFromLinkedList(std::vector<int>& nextIndices, int& i1, int& i2, int& i3) {
+	nextIndices[i1] = i3;
+	i2 = i3;
+	i3 = nextIndices[i2];
+}
+
 void Triangulator::earClipMergedShapes(std::vector<Vector2D<float>>& vertices, std::vector<int>& triangles, std::vector<int>& nextIndices, const std::unordered_map<int, int>* originalVerticesMap) {
 	bool globalOrientation = getShapeLinkedOrientation(vertices, nextIndices);
 	if (vertices.size() >= 3) {
@@ -200,15 +206,11 @@ void Triangulator::earClipMergedShapes(std::vector<Vector2D<float>>& vertices, s
 				triangles.push_back(getOptimizedIndex(i1, originalVerticesMap));
 				triangles.push_back(getOptimizedIndex(i2, originalVerticesMap));
 				triangles.push_back(getOptimizedIndex(i3, originalVerticesMap));
-				nextIndices[i1] = i3;
-				i2 = i3;
-				i3 = nextIndices[i2];
+				unchainCurrentMiddleVertexFromLinkedList(nextIndices, i1, i2, i3);
 			}
 			else {
 				if (Vector2D<float>::squareDistance(vertices[i1], vertices[i2]) < std::numeric_limits<float>::epsilon()) {
-					nextIndices[i1] = i3;
-					i2 = i3;
-					i3 = nextIndices[i2];
+					unchainCurrentMiddleVertexFromLinkedList(nextIndices, i1, i2, i3);
 				}
 				else {
 					i1 = i2;
