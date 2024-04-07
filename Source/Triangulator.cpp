@@ -205,9 +205,17 @@ void Triangulator::earClipMergedShapes(std::vector<Vector2D<float>>& vertices, s
 				i3 = nextIndices[i2];
 			}
 			else {
-				i1 = i2;
-				i2 = i3;
-				i3 = nextIndices[i3];
+				if (Vector2D<float>::squareDistance(vertices[i1], vertices[i2]) < std::numeric_limits<float>::epsilon()) {
+					nextIndices[i1] = i3;
+					i2 = i3;
+					i3 = nextIndices[i2];
+				}
+				else {
+					i1 = i2;
+					i2 = i3;
+					i3 = nextIndices[i3];
+				}
+
 			}
 		}
 	}
