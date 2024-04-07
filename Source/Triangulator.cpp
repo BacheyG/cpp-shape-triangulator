@@ -4,9 +4,9 @@
 #include "Triangulator.hpp"
 
 #include "../Vector/Vector.hpp"
+#include "TriangulatorAlgorithmMetadata.hpp"
 #include <algorithm>
 #include <unordered_map>
-#include <vector>
 
 float Triangulator::pointToHorizontalSegmentIntersectDistance(const Vector2D<float>& origin, const Vector2D<float>& segmentA, const Vector2D<float>& segmentB) {
 	float result = -1;
@@ -97,7 +97,7 @@ void Triangulator::combineSortedHoles(std::vector<Vector2D<float>>& result, cons
 	}
 }
 
-void Triangulator::mergeShapeWithHoles(std::vector<Vector2D<float>>& vertices, std::vector<int>& nextIndices, const std::vector<std::vector<Vector2D<float>>>& holes, std::unordered_map<int, int>& clonedIndices, int& endOfOuterShape) {
+void Triangulator::mergeShapeWithHoles(std::vector<Vector2D<float>>& vertices, std::vector<int>& nextIndices, const std::vector<std::vector<Vector2D<float>>>& holes, std::unordered_map<int, int>& clonedIndices, int& endOfOuterShape, TriangulatorAlgorithmMetadatas* metaDatas) {
 	endOfOuterShape = static_cast<int>(vertices.size());
 	int outerOffset = endOfOuterShape;
 	std::vector<int> holeIndices;
@@ -165,6 +165,14 @@ void Triangulator::mergeShapeWithHoles(std::vector<Vector2D<float>>& vertices, s
 		// Make the original inner vertex point to the outer vertex, this will be when we leave the inner circle
 		nextIndices[innerIndex] = clonedOuterIndex;
 
+		if (metaDatas != nullptr) {
+			TriangulatorAlgorithmMetadata metaData;
+			metaData.innerRightmostVertex = vertices[innerIndex];
+			metaData.outerShapeConnectedVertex = vertices[outerIndex];
+			metaData.intersectionPoint = vertices[innerIndex] + Vector2D<float>(0, t);
+			metaDatas->push_back(metaData);
+		}
+
 		endOfOuterShape = endOfCurrentInner;
 	}
 }
@@ -231,13 +239,13 @@ void Triangulator::earClipShape(std::vector<Vector2D<float>>& vertices, std::vec
 	}
 }
 
-void Triangulator::earClipShapeWithHole(std::vector<Vector2D<float>>& vertices, std::vector<int>& indices, const std::vector<std::vector<Vector2D<float>>>& holes) {
+void Triangulator::earClipShapeWithHole(std::vector<Vector2D<float>>& vertices, std::vector<int>& indices, const std::vector<std::vector<Vector2D<float>>>& holes, TriangulatorAlgorithmMetadatas* metaDatas) {
 	if (vertices.size() > 0) {
 		std::vector<int> nextIndices;
 		std::unordered_map<int, int> originalVerticesMap;
 		int endIndexOfOptimizedShape;
 		constructShapeLinkedList(nextIndices, 0, static_cast<int>(vertices.size()));
-		mergeShapeWithHoles(vertices, nextIndices, holes, originalVerticesMap, endIndexOfOptimizedShape);
+		mergeShapeWithHoles(vertices, nextIndices, holes, originalVerticesMap, endIndexOfOptimizedShape, metaDatas);
 		earClipMergedShapes(vertices, indices, nextIndices, &originalVerticesMap);
 	}
 }
