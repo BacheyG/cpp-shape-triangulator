@@ -140,6 +140,7 @@ void Triangulator::mergeShapeWithHoles(std::vector<Vector2D<float>>& vertices, s
 		}
 		// Check if found outer vertex is obscuredand get the vertex that is visible.
 		float dOuterPoint = abs(vertices[innerIndex].Y - vertices[outerIndex].Y);
+		int savedOuterIndexBeforeObscureTest = outerIndex;
 		for (int i = 0; i < endOfOuterShape; ++i) {
 			if (pointInTriangle(Vector2D<float>(vertices[innerIndex].X + t, vertices[innerIndex].Y), vertices[innerIndex], vertices[outerIndex], vertices[i])) {
 				float newDouterPoint = abs(vertices[innerIndex].Y - vertices[i].Y);
@@ -167,9 +168,10 @@ void Triangulator::mergeShapeWithHoles(std::vector<Vector2D<float>>& vertices, s
 
 		if (metaDatas != nullptr) {
 			TriangulatorAlgorithmMetadata metaData;
-			metaData.innerRightmostVertex = vertices[innerIndex];
-			metaData.outerShapeConnectedVertex = vertices[outerIndex];
-			metaData.intersectionPoint = vertices[innerIndex] + Vector2D<float>(0, t);
+			metaData.innerRightmostVertexIndex = innerIndex;
+			metaData.outerShapeConnectedVertexIndex = outerIndex;
+			metaData.intersectionDistance = t;
+			metaData.outerShapeConnectedVertexIndexBeforeObscureTest = savedOuterIndexBeforeObscureTest;
 			metaDatas->push_back(metaData);
 		}
 

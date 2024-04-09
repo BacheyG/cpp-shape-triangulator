@@ -7,9 +7,10 @@
 #include <vector>
 
 struct TriangulatorAlgorithmMetadata {
-	Vector2D<float> innerRightmostVertex;
-	Vector2D<float> outerShapeConnectedVertex;
-	Vector2D<float> intersectionPoint;
+	int innerRightmostVertexIndex;
+	int outerShapeConnectedVertexIndex;
+	float intersectionDistance;
+	int outerShapeConnectedVertexIndexBeforeObscureTest;
 };
 
 typedef std::vector<TriangulatorAlgorithmMetadata> TriangulatorAlgorithmMetadatas;
