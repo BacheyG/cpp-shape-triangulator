@@ -18,7 +18,7 @@ static void plotMetaDatas(PlotSvg& svgPlot, const std::vector<Vector2D<float>>& 
 		svgPlot.addCircle(intersectPoint, 3, "#0000ff");
 		if (metaData.outerShapeConnectedVertexIndex != metaData.outerShapeConnectedVertexIndexBeforeObscureTest) {
 			svgPlot.addCircle(vertices[metaData.outerShapeConnectedVertexIndexBeforeObscureTest], 5, "#00ffffcc");
-			svgPlot.addPolygon({ vertices[metaData.innerRightmostVertexIndex], vertices[metaData.outerShapeConnectedVertexIndexBeforeObscureTest], intersectPoint }, {0,1,2}, "#00ff0033", "#00ff00");
+			svgPlot.addPolygon({ vertices[metaData.innerRightmostVertexIndex], vertices[metaData.outerShapeConnectedVertexIndexBeforeObscureTest], intersectPoint }, {0,1,2}, "#00ff0022", "#00ff00");
 		}
 	}
 }
@@ -79,7 +79,7 @@ int main()
 
 	indices.clear();
 
-	std::vector<Vector2D<float>> vertices2{ {1,1}, {1.7f,0.7f}, {1.9f,-0.4f}, {1.3f,0.35f}, {0,0}, {0,1}, {1,1} };
+	std::vector<Vector2D<float>> vertices2{ {1,1}, {1.7f,0.7f}, {1.9f,-0.4f}, {1.2f, 0}, {1.5, 0.1f}, {1.15f, 0.26f}, {1.3f,0.35f}, {0,0}, {0,1}, {1,1} };
 	std::vector<std::vector<Vector2D<float>>> holes2{ { {0.55f,0.55f}, {0.27f,0.55f}, {0.18f,0.18f}, {0.85f,0.45f}, {0.55f,0.55f} } };
 
 	TriangulatorAlgorithmMetadatas polygonWithHoles2MetaDatas;
