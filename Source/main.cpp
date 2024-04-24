@@ -9,11 +9,11 @@
 #include <iostream>
 #include <vector>
 
-static const std::string k_defaultFillColor = "#44aaef";
+static const std::string k_defaultFillColor = "#aa44ef";
 
 static void plotMetaDatas(PlotSvg& svgPlot, const std::vector<Vector2D<float>>& vertices, const TriangulatorAlgorithmMetadatas& metaDatas) {
 	for (auto& metaData : metaDatas) {
-		svgPlot.addLine(vertices[metaData.innerRightmostVertexIndex], vertices[metaData.outerShapeConnectedVertexIndex], "#aaff00", 6);
+		svgPlot.addLine(vertices[metaData.innerRightmostVertexIndex], vertices[metaData.outerShapeConnectedVertexIndex], "#aaff00", 4);
 		Vector2D<float> intersectPoint = vertices[metaData.innerRightmostVertexIndex] + Vector2D<float>(metaData.intersectionDistance, 0);
 		svgPlot.addCircle(intersectPoint, 3, "#0000ff");
 		if (metaData.outerShapeConnectedVertexIndex != metaData.outerShapeConnectedVertexIndexBeforeObscureTest) {
