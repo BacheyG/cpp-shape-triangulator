@@ -9,7 +9,7 @@
 #include <iostream>
 #include <vector>
 
-static const std::string k_defaultFillColor = "#aa44ef";
+static const std::string k_defaultFillColor = "#6738c5";
 
 static void plotMetaDatas(PlotSvg& svgPlot, const std::vector<Vector2D<float>>& vertices, const TriangulatorAlgorithmMetadatas& metaDatas) {
 	for (auto& metaData : metaDatas) {
@@ -89,6 +89,11 @@ int main()
 	plotMetaDatas(shapeWithHolesSvg2, vertices2, polygonWithHoles2MetaDatas);
 	shapeWithHolesSvg2.finalize();
 
+	PlotSvg shapeWithHolesSvg2Animated("polygonWithHoles2Animated.svg");
+	shapeWithHolesSvg2Animated.addPolygon(vertices2, indices, k_defaultFillColor, "#000000", 1, true);
+	//plotMetaDatas(shapeWithHolesSvg2Animated, vertices2, polygonWithHoles2MetaDatas);
+	shapeWithHolesSvg2Animated.finalize();
+
 	// Case study: Drawing a letter A.
 	std::vector<Vector2D<float>> verticesA{ { 30.037f, 1.631f}, { 27.470f, 6.078f}, { 16.539f, 30.930f}, { 16.115f, 30.930f}, { 5.276f, 6.750f}, { 2.683f, 2.180f}, { -0.000f, 0.828f}, { -0.000f, 0.000f}, { 10.079f, 0.000f}, { 10.079f, 0.828f}, { 7.107f, 1.363f}, { 6.078f, 3.240f}, { 6.705f, 5.678f}, { 7.978f, 8.627f}, { 18.683f, 8.627f}, { 20.291f, 4.850f}, { 20.961f, 3.174f}, { 21.096f, 2.348f}, { 20.606f, 1.319f}, { 18.126f, 0.831f}, { 17.522f, 0.831f}, { 17.522f, 0.003f}, { 32.181f, 0.003f}, { 32.181f, 0.831f}, { 30.037f, 1.631f} };
 	std::vector<std::vector<Vector2D<float>>> holesA{ { {9.6f, 12.5f}, {12.37f, 19.2f}, {14.71f, 19.2f}, {17.03f, 12.5f} } };
@@ -99,5 +104,9 @@ int main()
 	PlotSvg letterASvg("polygonLetterA.svg");
 	letterASvg.addPolygon(verticesA, indices, k_defaultFillColor);
 	letterASvg.finalize();
+
+	PlotSvg letterASvgAnimated("polygonLetterAanimated.svg");
+	letterASvgAnimated.addPolygon(verticesA, indices, k_defaultFillColor, "#000000", 1, true);
+	letterASvgAnimated.finalize();
 	return 0;
 }
