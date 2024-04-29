@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../Vector/Vector.hpp"
+#include "../Math/Vector.hpp"
 #include <vector>
 
 struct TriangulatorAlgorithmMetadata {

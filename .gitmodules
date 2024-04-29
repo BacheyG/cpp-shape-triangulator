@@ -2,7 +2,6 @@
 	path = PlotSvg
 	url = https://github.com/BacheyG/cpp-plot-svg
 	branch = main
-[submodule "Vector"]
-	path = Vector
-	url = https://github.com/BacheyG/cpp-vector.git
-	branch = main
+[submodule "Math"]
+	path = Math
+	url = https://github.com/BacheyG/cpp-math

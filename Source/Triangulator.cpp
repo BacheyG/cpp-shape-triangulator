@@ -3,10 +3,12 @@
 
 #include "Triangulator.hpp"
 
-#include "../Vector/Vector.hpp"
+#include "../Math/Vector.hpp"
 #include "TriangulatorAlgorithmMetadata.hpp"
 #include <algorithm>
 #include <unordered_map>
+
+static constexpr float k_minTriangleArea = 0.001f;
 
 float Triangulator::pointToHorizontalSegmentIntersectDistance(const Vector2D<float>& origin, const Vector2D<float>& segmentA, const Vector2D<float>& segmentB) {
 	float result = -1;
@@ -20,24 +22,24 @@ float Triangulator::pointToHorizontalSegmentIntersectDistance(const Vector2D<flo
 
 bool Triangulator::getShapeOrientation(const std::vector<Vector2D<float>>& shape) {
 	float areaSum = 0.0f;
-	for (int i = 0; i < shape.size(); ++i) {
-		int iNext = (i + 1) % static_cast<int>(shape.size());
-		areaSum += (shape[iNext].X - shape[i].X) * (shape[iNext].Y + shape[i].Y);
+	for (int i0 = 0; i0 < shape.size(); ++i0) {
+		int i1 = (i0 + 1) % static_cast<int>(shape.size());
+		areaSum += (shape[i1].X - shape[i0].X) * (shape[i1].Y + shape[i0].Y);
 	}
 	return (areaSum >= 0);
 }
 
 bool Triangulator::getShapeLinkedOrientation(const std::vector<Vector2D<float>>& shape, const std::vector<int>& nextIndices) {
 	float areaSum = 0.0f;
-	int i = -1;
-	while (i != 0) {
-		if (i == -1) {
-			i = 0;
+	int i0 = -1;
+	while (i0 != 0) {
+		if (i0 == -1) {
+			i0 = 0;
 		}
-		int iNext = nextIndices[i];
+		int i1 = nextIndices[i0];
 
-		areaSum += (shape[iNext].X - shape[i].X) * (shape[iNext].Y + shape[i].Y);
-		i = nextIndices[i];
+		areaSum += (shape[i1].X - shape[i0].X) * (shape[i1].Y + shape[i0].Y);
+		i0 = nextIndices[i0];
 	}
 	return (areaSum >= 0);
 }
@@ -187,6 +189,10 @@ int Triangulator::getOptimizedIndex(int index, const std::unordered_map<int, int
 	return record != originalVerticesMap->end() ? record->second : index;
 }
 
+float Triangulator::getTriangleDoubleArea(Vector2D<float> a, Vector2D<float> b, Vector2D<float> c) {
+	return std::abs(a.X * (b.Y - c.Y) + b.X * (c.Y - a.Y) + c.X * (a.Y - b.Y));
+}
+
 bool Triangulator::anyPointInTriangle(const std::vector<Vector2D<float>>& shape, int i1, int i2, int i3, const std::vector<int>& nextIndices) {
 	int current = nextIndices[i3];
 	while (current != i1) {
@@ -212,10 +218,11 @@ void Triangulator::earClipMergedShapes(std::vector<Vector2D<float>>& vertices, s
 		int i3 = nextIndices[i2];
 		while (i1 != i3 && i2 != i1) {
 			if (getShapeOrientation({ vertices[i1], vertices[i2], vertices[i3] }) == globalOrientation && !anyPointInTriangle(vertices, i1, i2, i3, nextIndices)) {
-
-				triangles.push_back(getOptimizedIndex(i1, originalVerticesMap));
-				triangles.push_back(getOptimizedIndex(i2, originalVerticesMap));
-				triangles.push_back(getOptimizedIndex(i3, originalVerticesMap));
+				if (getTriangleDoubleArea(vertices[i1], vertices[i2], vertices[i3]) > k_minTriangleArea) {
+					triangles.push_back(getOptimizedIndex(i1, originalVerticesMap));
+					triangles.push_back(getOptimizedIndex(i2, originalVerticesMap));
+					triangles.push_back(getOptimizedIndex(i3, originalVerticesMap));
+				}
 				unchainCurrentMiddleVertexFromLinkedList(nextIndices, i1, i2, i3);
 			}
 			else {

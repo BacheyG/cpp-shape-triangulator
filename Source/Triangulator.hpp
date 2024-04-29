@@ -22,6 +22,7 @@ private:
 	static void combineSortedHoles(std::vector<Vector2D<float>>& result, const std::vector<std::vector<Vector2D<float>>> holes, std::vector<int>& holeIndices);
 	static void mergeShapeWithHoles(std::vector<Vector2D<float>>& vertices, std::vector<int>& nextIndices, const std::vector<std::vector<Vector2D<float>>>& holes, std::unordered_map<int, int>& clonedIndices, int& endOfOuterShape, TriangulatorAlgorithmMetadatas* metaDatas = nullptr);
 	static int getOptimizedIndex(int index, const std::unordered_map<int, int>* originalVerticesMap);
+	static float getTriangleDoubleArea(Vector2D<float> a, Vector2D<float> b, Vector2D<float> c);
 	static bool anyPointInTriangle(const std::vector<Vector2D<float>>& shape, int i1, int i2, int i3, const std::vector<int>& nextIndices);
 	static void earClipMergedShapes(std::vector<Vector2D<float>>& vertices, std::vector<int>& triangles, std::vector<int>& nextIndices, const std::unordered_map<int, int>* originalVerticesMap = nullptr);
 public:

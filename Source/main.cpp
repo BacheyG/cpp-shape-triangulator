@@ -3,7 +3,7 @@
 
 #include "Triangulator.hpp"
 #include "TriangulatorAlgorithmMetadata.hpp"
-#include "../Vector/Vector.hpp"
+#include "../Math/Vector.hpp"
 #include "../PlotSvg/PlotSvg.hpp"
 
 #include <iostream>
@@ -34,6 +34,10 @@ int main()
 	quadSvg.addPolygon(verticesQuad, indices, k_defaultFillColor);
 	quadSvg.finalize();
 
+	PlotSvg quadSvgAnimated("polygonQuadAnimated.svg");
+	quadSvgAnimated.addPolygon(verticesQuad, indices, k_defaultFillColor, "#000000", 1, true);
+	quadSvgAnimated.finalize();
+
 	// Case study: A bit more complex shape: adding a cut to make it concave.
 	std::vector<Vector2D<float>> verticesConcaveQuad{ {0,0}, {0,1}, {1, 1}, {0.75, 0.5}, {1, 0} };
 	indices.clear();
@@ -43,15 +47,22 @@ int main()
 	concaveQuadSvg.addPolygon(verticesConcaveQuad, indices, k_defaultFillColor);
 	concaveQuadSvg.finalize();
 
+	PlotSvg concaveQuadAnimated("polygonConcaveQuadAnimated.svg");
+	concaveQuadAnimated.addPolygon(verticesConcaveQuad, indices, k_defaultFillColor, "#000000", 1, true);
+	concaveQuadAnimated.finalize();
 
 	// Case study: Another example of handling concave shapes, don't include an ear if other vertices are within the triangle.
 	std::vector<Vector2D<float>> verticesConcave2{ {0,1}, {0.5f,0}, {1, 1}, {0.5f, 0.2f} };
 	indices.clear();
 
 	Triangulator::earClipShape(verticesConcave2, indices);
-	PlotSvg concaveShapeSvg("PoligonVShape.svg");
+	PlotSvg concaveShapeSvg("polygonVShape.svg");
 	concaveShapeSvg.addPolygon(verticesConcave2, indices, k_defaultFillColor);
 	concaveShapeSvg.finalize();
+
+	PlotSvg concaveShapeSvgAnimated("polygonVShapeAnimated.svg");
+	concaveShapeSvgAnimated.addPolygon(verticesConcave2, indices, k_defaultFillColor, "#000000", 1, true);
+	concaveShapeSvgAnimated.finalize();
 
 	// Case study: Drawing a concave star.
 	std::vector<Vector2D<float>> verticesStar{ {26.934f,1.318f}, {35.256f,18.182f}, {53.867f,20.887f}, {40.4f,34.013f}, {43.579f,52.549f}, {26.934f,43.798f}, {10.288f,52.549f}, {13.467f,34.013f}, {0,20.887f}, {18.611f,18.182f} };
@@ -62,6 +73,10 @@ int main()
 	PlotSvg starShapeSvg("polygonStar.svg");
 	starShapeSvg.addPolygon(verticesStar, indices, k_defaultFillColor);
 	starShapeSvg.finalize();
+
+	PlotSvg starShapeSvgAnimated("polygonStarAnimated.svg");
+	starShapeSvgAnimated.addPolygon(verticesStar, indices, k_defaultFillColor, "#000000", 1, true);
+	starShapeSvgAnimated.finalize();
 
 	// Case study: A concave polygon with 2 holes, demonstrating how hole processing order is important: always start with the hole that has the rightmost X coordinate.
 	std::vector<Vector2D<float>> vertices1{ {1,1}, {1.7f,0.3f}, {1.9f,0}, {1.1f,0.2f}, {0,0}, {0,1}, {1,1} };
@@ -77,6 +92,10 @@ int main()
 	plotMetaDatas(shapeWithHolesSvg1, vertices1, polygonWithHoles1MetaDatas);
 	shapeWithHolesSvg1.finalize();
 
+	PlotSvg shapeWithHolesSvg1Animated("polygonWithHoles1Animated.svg");
+	shapeWithHolesSvg1Animated.addPolygon(vertices1, indices, k_defaultFillColor, "#000000", 1, true);
+	shapeWithHolesSvg1Animated.finalize();
+
 	indices.clear();
 
 	std::vector<Vector2D<float>> vertices2{ {1,1}, {1.7f,0.7f}, {1.9f,-0.4f}, {1.2f, 0}, {1.5, 0.1f}, {1.15f, 0.26f}, {1.3f,0.35f}, {0,0}, {0,1}, {1,1} };
@@ -91,7 +110,6 @@ int main()
 
 	PlotSvg shapeWithHolesSvg2Animated("polygonWithHoles2Animated.svg");
 	shapeWithHolesSvg2Animated.addPolygon(vertices2, indices, k_defaultFillColor, "#000000", 1, true);
-	//plotMetaDatas(shapeWithHolesSvg2Animated, vertices2, polygonWithHoles2MetaDatas);
 	shapeWithHolesSvg2Animated.finalize();
 
 	// Case study: Drawing a letter A.
