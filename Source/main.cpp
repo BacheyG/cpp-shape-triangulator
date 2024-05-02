@@ -20,6 +20,8 @@ static void plotMetaDatas(PlotSvg& svgPlot, const std::vector<Vector2D<float>>& 
 			svgPlot.addCircle(vertices[metaData.outerShapeConnectedVertexIndexBeforeObscureTest], 5, "#00ffffcc");
 			svgPlot.addPolygon({ vertices[metaData.innerRightmostVertexIndex], vertices[metaData.outerShapeConnectedVertexIndexBeforeObscureTest], intersectPoint }, { 0,1,2 }, "#00ff0022", "#00ff00");
 		}
+		svgPlot.addText(vertices[metaData.innerRightmostVertexIndex], "B", "#281200ff", 18);
+		svgPlot.addText(vertices[metaData.outerShapeConnectedVertexIndex], "A", "#281200ff", 18);
 	}
 }
 
